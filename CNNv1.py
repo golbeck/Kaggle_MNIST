@@ -2,6 +2,7 @@
 ####################################################################################
 import numpy as np
 from scipy import special
+from scipy.signal import convolve
 import os
 import pandas as pd
 
@@ -141,8 +142,8 @@ def confusion_matrix_multi(y_out,y,n_class):
 ####################################################################################
 ####################################################################################
 pwd_temp=os.getcwd()
-# dir1='/home/sgolbeck/workspace/PythonExercises/NeuralNets'
-dir1='/home/golbeck/Workspace/Kaggle_MNIST'
+dir1='/home/sgolbeck/workspace/Kaggle_MNIST'
+# dir1='/home/golbeck/Workspace/Kaggle_MNIST'
 dir1=dir1+'/data' 
 if pwd_temp!=dir1:
     os.chdir(dir1)
@@ -156,15 +157,37 @@ Y_train=np.zeros((Y_train_array.shape[0],K))
 for i in range(Y_train_array.shape[0]):
     Y_train[i,Y_train_array[i]]=1
 
+#dimensions of MNIST
+w=28
+h=28
 
 X_in=dataset[:,1:]
 n=X_in.shape[0]
-X_image=np.zeros((n,28,28))
-for j in range(28):
-	for k in range(28):
-		l=j*28+k
+#convert training set to an array of 2D matrices
+X_image=np.zeros((n,w,h))
+for j in range(w):
+	for k in range(h):
+		l=j*w+k
 		X_image[:,j,k]=X_in[:,l]
 
-
-
+#number of filters
+n_filters=1
+#test filter
+w_f=2
+h_f=2
+X_filter=np.zeros((n_filters,w_f,h_f))
+X_filter[0]=np.array([[1.0,-1.0],[0.0,1.0]])
+#use scipy.signal.convolve 
+X_conv=np.zeros((n,n_filters,w+1,h+1))
+#pooling size
+n_p=2
+X_pooled=np.zeros((n,n_filters,w/n_p,h/n_p))
+for i in range(n):
+    for j in range(n_filters):
+        #by default, uses 1-unit of zero padding and stride of 1
+        X_conv[i,j,:,:]=convolve(X_image[i],X_filter[j])
+        #max pooling for (n_p,n_p) non-overlapping regions
+        for k in range(w/n_p):
+            for l in range(h/n_p):
+                X_pooled[i,j,k,l]=X_conv[i,j,k*n_p:(k+1)*n_p,l*n_p:(l+1)*n_p].max()
 
