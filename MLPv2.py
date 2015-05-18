@@ -195,19 +195,19 @@ for i in range(p):
 #####################################################################################
 #####################################################################################
 #number of observations used in each gradient update
-batch_size=100
+batch_size=50
 #hyperparameters
 eps_alpha=0.1
 #learning rate adjustment factor
 eps_adj=0.40
 #L2 regularization parameter
-eps_penalty=0.001
+eps_penalty=0.0001
 #momentum smoothing parameter is min( x[0]+(x[1]-x[0])*epoch/x[2], x[1])
 mom_param=np.array([0.50,0.99,200.0])
 #at each epoch, learning rate decreases by a factor of (1-gamma)
 gamma=0.01
 #number of neurons in each hidden layer
-M=np.array([800,600,400,200])
+M=np.array([1500,800,300])
 #number of hidden layers
 n_layers=M.shape[0]
 #append the number of output units to M
@@ -422,4 +422,4 @@ df['ImageId']=index
 df['Label']=y_pred_test
 
 df.head(10)
-df.to_csv("test_predictions1024x1024.csv",sep=",",index=False)
+df.to_csv("test_predictions1500x800x300.csv",sep=",",index=False)
